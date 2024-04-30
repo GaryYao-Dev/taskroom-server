@@ -8,7 +8,7 @@ const User = require('../models/user.model');
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET,
+  secretOrKey: process.env.JWT_SECRET || 'secret',
 };
 
 const jwtStrategy = new JwtStrategy(jwtOptions, async (payload, done) => {
