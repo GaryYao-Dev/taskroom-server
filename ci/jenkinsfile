@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+    tools {
+      nodejs 'Node_18'
+    }
+    environment {
+        CONTAINER_NAME = 'taskroom-server'
+    }
+    stages {
+        stage('Build Docker Image') {
+          steps {
+            script {
+              docker.build(CONTAINER_NAME)
+            }
+          }
+        }
+
+        stage('Check Docker Container') {
+          steps {
+            script {
+              // 检查是否有同名的容器正在运行
+              result = sh(script: "docker ps -aq --filter name=\$CONTAINER_NAME", returnStdout: true).trim()
+              if (result) {
+                // 如果有，停止并删除该容器
+                sh "docker stop \$CONTAINER_NAME"
+                sh "docker rm \$CONTAINER_NAME"
+              }
+            }
+          }
+        }
+
+        stage('Run Docker Container') {
+          steps {
+            sh "docker run -d --name=\"\$CONTAINER_NAME\" --net=\"bridge\" -e TZ=\"Australia/Sydney\" -e HOST_OS=\"Unraid\" -p \"8083:8000/tcp\" \"\$CONTAINER_NAME\""
+          }
+        }
+    }
+}
+
+// docker run -d --name='Jenkins' --net='bridge' --privileged=true -e TZ="Australia/Sydney" -e HOST_OS="Unraid" -p '8082:8080/tcp' -v '/var/run/docker.sock':'/var/run/docker.sock':'rw' -v '/mnt/user/appdata/Jenkins':'/var/jenkins_home':'rw' 'jenkins/jenkins2' && docker network connect socket_proxy Jenkins
+        // stage('Push Docker Image') {
+        //   steps {
+        //     // 将镜像推送到 Docker Registry
+        //     // sh 'docker tag taskroom-client docker.ygy3389.com/taskroom-client'
+        //     // sh 'docker push docker.ygy3389.com/taskroom-client'
+        //     script {
+        //       docker.image('taskroom-client').tag('docker.ygy3389.com/taskroom-client').push('docker.ygy3389.com/taskroom-client')
+        //     }
+        //   }
+        // }
+
+        // stage('Deploy') {
+        //   steps {
+        //     // 部署应用
+        //     sh 'ssh root@192.168.1.111 "docker pull docker.ygy3389.com/taskroom-client && docker run -d --name="taskroom-client" --net="bridge" -e TZ="Australia/Sydney" -e HOST_OS="Unraid" -p "3001:3000/tcp" "docker.ygy3389.com/taskroom-client""'
+        //   }
+        // }

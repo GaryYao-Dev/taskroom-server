@@ -47,7 +47,7 @@ const localStrategy = new LocalStrategy(
 const googleOptions = {
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'http://localhost:8000/api/v1/auth/google/callback',
+  callbackURL: 'https://api.taskroom.ygy3389.com/api/v1/auth/google/callback',
 };
 
 const googleStrategy = new GoogleStrategy(
