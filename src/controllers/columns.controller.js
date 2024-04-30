@@ -2,8 +2,11 @@ const ColumnModel = require('../models/column.model');
 const NotFoundError = require('../errors/not.found');
 const TaskModel = require('../models/task.model');
 const ProjectModel = require('../models/project.model');
+const logger = require('../utils/logger');
+const { deleteTasks: deleteTasksService } = require('../services/column.service');
 
-const logger = require('../utils/logger'); // Create the logger instance
+const { sortTasks: sortTasksService } = require('../services/column.service');
+const { copyColumn: copyColumnService } = require('../services/column.service');
 
 const createColumn = async (req, res, next) => {
   // get userId from req.body for testing purpose, should be req.user.id
@@ -90,9 +93,47 @@ const deleteColumnById = async (req, res, next) => {
     await ProjectModel.findByIdAndUpdate(column.parent_project, {
       $pull: { columns: id },
     });
-    await TaskModel.deleteMany({_id: { $in: column.tasks }});
+    await TaskModel.deleteMany({ _id: { $in: column.tasks } });
     res.status(204).send();
     logger.info(`Column ${id} deleted successfully`);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteTasks = async (req, res, next) => {
+  const { id: columnId } = req.params;
+  try {
+    await deleteTasksService(columnId);
+    res.status(200).json({ message: 'Tasks deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const sortTasks = async (req, res, next) => {
+  const { id: columnId } = req.params;
+  const { type, order } = req.body;
+
+  try {
+    await sortTasksService(columnId, type, order);
+    const updatedColumn = await ColumnModel.findById(columnId).populate({
+      path: 'tasks',
+      select: 'title',
+    });
+    const { id, tasks, name } = updatedColumn;
+    res.status(200).json({ id, tasks, name });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const copyColumn = async (req, res, next) => {
+  const { id: columnId } = req.params;
+  const userId = req.user.id;
+  try {
+    const column = await copyColumnService(columnId, userId);
+    res.status(200).json(column);
   } catch (error) {
     next(error);
   }
@@ -104,4 +145,7 @@ module.exports = {
   getAllColumns,
   updateColumnById,
   deleteColumnById,
+  sortTasks,
+  copyColumn,
+  deleteTasks,
 };

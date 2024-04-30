@@ -114,10 +114,31 @@ const getProjectsForUser = async (req, res, next) => {
       .populate('joined_projects')
       .exec();
     const projects = {};
-    const array = [...owned_projects, ...joined_projects];
-    array.forEach((project) => {
-      const { columns, created_by, created_at, members, name, profile } =
-        project;
+    // const array = [...owned_projects, ...joined_projects];
+    // array.forEach((project) => {
+    //   const { columns, created_by, created_at, members, name, profile } =
+    //     project;
+    //   projects[project.id] = {
+    //     columns,
+    //     created_by,
+    //     created_at,
+    //     members,
+    //     name,
+    //     profile,
+    //   };
+    // });
+
+    [...owned_projects, ...joined_projects].map((project) => {
+      const {
+        columns,
+        created_by,
+        created_at,
+        members,
+        name,
+        profile,
+        background_color,
+      } = project;
+
       projects[project.id] = {
         columns,
         created_by,
@@ -125,8 +146,11 @@ const getProjectsForUser = async (req, res, next) => {
         members,
         name,
         profile,
+        backgroundColor: background_color,
+        type: project.created_by.toString() === userId ? 'owned' : 'joined',
       };
     });
+
     res.json(projects);
     // Log successful retrieval
     logger.info(

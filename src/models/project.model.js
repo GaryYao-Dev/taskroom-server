@@ -36,6 +36,9 @@ const projectSchema = new mongoose.Schema({
       ref: 'Column',
     },
   ],
+  background_color: {
+    type: String,
+  },
 });
 
 projectSchema.virtual('id').get(function () {

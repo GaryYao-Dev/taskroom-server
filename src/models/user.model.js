@@ -3,6 +3,9 @@ const { Schema, model } = require('mongoose');
 const Joi = require('joi');
 
 const userSchema = new Schema({
+  googleId: {
+    type: String,
+  },
   username: {
     type: String,
     required: true,
@@ -29,7 +32,7 @@ const userSchema = new Schema({
   },
   hashed_password: {
     type: String,
-    required: true,
+    // required: true,
     validate: [],
   },
   salt: {
@@ -64,16 +67,27 @@ const userSchema = new Schema({
       ref: 'Task',
     },
   ],
+  otp: {
+    code: {
+      type: String,
+    },
+    expiredAt: {
+      type: Date,
+    },
+    attemps: {
+      type: Number,
+    }
+  },
 });
 
 userSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => {
-    ret.id = ret._id
-    delete ret._id
-    delete ret.__v
-  }
-})
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
 
 const UserModel = model('User', userSchema);
 

@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express');
 
 const {
   createColumn,
@@ -6,14 +6,21 @@ const {
   getColumnById,
   updateColumnById,
   deleteColumnById,
-} = require('../controllers/columns.controller')
+  sortTasks,
+  copyColumn,
+  deleteTasks,
+} = require('../controllers/columns.controller');
+const { authenticateJWT } = require('../middleware/auth.middleware');
 
-const columnRouter = express.Router()
+const columnRouter = express.Router();
 
-columnRouter.post('/', createColumn)
-columnRouter.get('/', getAllColumns)
-columnRouter.get('/:id', getColumnById)
-columnRouter.patch('/:id', updateColumnById)
-columnRouter.delete('/:id', deleteColumnById)
+columnRouter.post('/', createColumn);
+columnRouter.get('/', getAllColumns);
+columnRouter.get('/:id', getColumnById);
+columnRouter.patch('/:id', updateColumnById);
+columnRouter.delete('/:id', deleteColumnById);
+columnRouter.patch('/sort/:id', sortTasks);
+columnRouter.post('/copy/:id', authenticateJWT, copyColumn);
+columnRouter.delete('/tasks/:id', deleteTasks);
 
-module.exports = columnRouter
+module.exports = columnRouter;

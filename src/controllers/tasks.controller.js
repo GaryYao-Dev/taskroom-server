@@ -3,6 +3,7 @@ const NotFoundError = require('../errors/not.found');
 const columnModel = require('../models/column.model');
 
 const logger = require('../utils/logger'); // Create the logger instance
+const { copyTask: copyTaskService } = require('../services/task.service');
 
 const postTask = async (req, res, next) => {
   // get userId from req.body for testing purpose, should be req.user.id
@@ -12,6 +13,7 @@ const postTask = async (req, res, next) => {
       parent_column: parent_column,
       title: title,
       created_by: req.user.id,
+      created_at: Date.now(),
     });
 
     await columnModel.findByIdAndUpdate(parent_column, {
@@ -118,10 +120,25 @@ const deleteTaskById = async (req, res, next) => {
   }
 };
 
+const copyTask = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const { id: userId } = req.user;
+    const task = await TaskModel.findById(id);
+    const newTask = await copyTaskService(task, userId);
+    res.status(201).json(newTask);
+    logger.info(`Task ${newTask.id} copied from ${id} successfully`);
+  } catch (error) {
+    logger.error(`Task ${id} copy failed`);
+    next(error);
+  }
+};
+
 module.exports = {
   postTask,
   getAllTasks,
   getTaskById,
   updateTask,
   deleteTaskById,
+  copyTask,
 };
