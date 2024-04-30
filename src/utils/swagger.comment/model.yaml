@@ -1,0 +1,118 @@
+openapi: 3.0.0
+info:
+  title: Task API
+  version: 1.0.0
+  description: Task API
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        parent_project:
+          type: string
+          description: The ID of the project that the task belongs to. It should be of ObjectID type, but for testing purposes, we're using a string.
+          example: '60a8f1b4f3c1e5d8c3e3b1e7'
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+          default: todo
+          description: The status of the task. It should be an enum type.
+        title:
+          type: string
+          minLength: 3
+          maxLength: 30
+          description: The title of the task.
+          example: 'Complete OpenAPI Documentation Generation'
+        content:
+          type: string
+          description: The content of the task.
+        created_by:
+          type: string
+          description: The ID of the user who created the task. It should be of ObjectID type, but for testing purposes, we're using a string.
+          example: '60a8f1b4f3c1e5d8c3e3b1e7'
+        created_at:
+          type: string
+          format: date-time
+          description: The time when the task was created.
+        last_modified_at:
+          type: string
+          format: date-time
+          description: The time when the task was last modified.
+        due_at:
+          type: string
+          format: date-time
+          description: The due time of the task. It defaults to one week after the creation time.
+        assigned_to:
+          type: string
+          description: The ID of the user to whom the task is assigned. It should be of ObjectID type.
+        comment:
+          type: string
+          description: The ID of the comment related to the task. It should be of ObjectID type.
+      required:
+        - title
+        - created_by
+    UpdateTask:
+      type: object
+      properties:
+        parent_project:
+          type: string
+          description: The ID of the project to which the task belongs.
+          example: '64c5de3ff3d0579499b3e2d9'
+        title:
+          type: string
+          description: The title of the task.
+        created_by:
+          type: string
+          description: The ID of the user who created the task. Should be obtained from req.user.id
+          example: '64c5de3ff3d0579499b3e2d8'
+        assigned_to:
+          type: string
+          example: '64c5de3ff3d0579499b3e2d7'
+        comment:
+          type: string
+          example: '64c5de3ff3d0579499b3e2d6'
+        due_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - todo
+            - in_progress
+            - done
+          example: 'done'
+
+  responses:
+    NotFound:
+      description: Entity not found.
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the task.
+        parent_project:
+          type: string
+          description: The ID of the parent project to which the task belongs.
+        title:
+          type: string
+          description: The title of the task.
+        created_by:
+          type: string
+          description: The ID of the user who created the task. Should be obtainted from req.user.id.
+    Tasks:
+      type: array
+      items:
+        $ref: '#/components/responses/Task'
+    NoContent:
+      type: object
+      properties:
+        message:
+          type: string
+          description: No content has been found or added into the database.
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message.

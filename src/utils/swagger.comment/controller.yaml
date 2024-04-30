@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: Task API
+  version: 1.0.0
+  description: Task API
+paths:
+  /api/v1/tasks:
+    post:
+      summary: Creates a new task
+      description: Create a new task and save it to the database.
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Task'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Error'
+
+    get:
+      summary: Returns all tasks
+      description: Get all tasks
+      tags:
+        - Tasks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Tasks'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Error'
+
+  /api/v1/tasks/{id}:
+    get:
+      summary: Returns a single task by ID
+      description: Retrieve details about a specific task identified by its ID.
+      tags:
+        - Tasks
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+          description: ID of the task to retrieve
+          example: '64c4fb72897ea3ed7a2e2a5b'
+      responses:
+        '200':
+          description: Task found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Task'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Error'
+
+    patch:
+      summary: Updates a task by ID
+      description: Get the existed task by using its id from database, and update its information.
+      tags:
+        - Tasks
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the task to update
+          example: '64c4fb72897ea3ed7a2e2a5b'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTask'
+      responses:
+        '204':
+          description: Task updated successfully
+
+    delete:
+      summary: Deletes a task by ID
+      description: Delete a task from database by using its id.
+      tags:
+        - Tasks
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the task to delete
+      responses:
+        '200':
+          description: Task deleted successfully
