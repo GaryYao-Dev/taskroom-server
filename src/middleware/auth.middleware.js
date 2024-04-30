@@ -34,7 +34,7 @@ const authenticateGoogle = passport.authenticate('google', {
   scope: ['profile', 'email'],
 });
 const authenticateGoogleCallback = passport.authenticate('google', {
-  failureRedirect: 'http://localhost:3000/login',
+  failureRedirect: 'https://taskroom.ygy3389.com/login',
 });
 
 module.exports = {

@@ -209,7 +209,7 @@ const verifyOTP = async (req, res, next) => {
 const googleLogin = async (req, res, next) => {
   try {
     const token = generateToken(req.user);
-    res.redirect(`http://localhost:3000/login?token=${token}`);
+    res.redirect(`https://taskroom.ygy3389.com/login?token=${token}`);
   } catch (error) {
     next(error);
   }
