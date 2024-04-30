@@ -31,7 +31,7 @@ pipeline {
 
         stage('Run Docker Container') {
           steps {
-            sh "docker run -d --name=\"\$CONTAINER_NAME\" --net=\"bridge\" -e TZ=\"Australia/Sydney\" -e HOST_OS=\"Unraid\" -v '/mnt/user/appdata/taskroom-server':'/usr/src/app':'rw' \"8083:8000/tcp\" \"\$CONTAINER_NAME\""
+            sh "docker run -d --name=\"\$CONTAINER_NAME\" --net=\"bridge\" -e TZ=\"Australia/Sydney\" -e HOST_OS=\"Unraid\" -v '/mnt/user/appdata/taskroom-server':'/usr/src/app':'rw' -p \"8083:8000/tcp\" \"\$CONTAINER_NAME\""
           }
         }
     }
