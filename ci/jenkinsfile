@@ -31,27 +31,23 @@ pipeline {
 
         stage('Run Docker Container') {
       steps {
-        withCredentials([
-            string(credentialsId: 'trs_mongo_uri', variable: 'TRS_MONGO_URI'),
-            string(credentialsId: 'trs_jwt_secret', variable: 'TRS_JWT_SECRET'),
-            string(credentialsId: 'trs_google_client_secret', variable: 'TRS_GOOGLE_CLIENT_SECRET'),
-            string(credentialsId: 'trs_google_client_id', variable: 'TRS_GOOGLE_CLIENT_ID')
-        ]) {
-            sh '''
-            docker run -d \
-            --name="taskroom-server" \
-            --net="bridge" \
-            -e TZ="Australia/Sydney" \
-            -e HOST_OS="Unraid" \
-            -e MONGO_URI="mongodb+srv://\$TRS_MONGO_URI/taskRoomDB" \
-            -e MONGO_TEST_URI="mongodb+srv://\$TRS_MONGO_URI/test" \
-            -e JWT_SECRET="\$TRS_JWT_SECRET" \
-            -e JWT_EXPIRES_IN="7d" \
-            -e GOOGLE_CLIENT_ID="\$TRS_GOOGLE_CLIENT_ID.apps.googleusercontent.com" \
-            -e GOOGLE_CLIENT_SECRET="\$TRS_GOOGLE_CLIENT_SECRET" \
-            -p "8083:8000/tcp" \
-            "taskroom-server"
-            '''
+        withCredentials([string(credentialsId: 'trs_secret', variable: 'TRS_SECRET')]) {
+          def secrets = readJSON text: TRS_SECRET
+          sh """
+            docker run -d \\
+                --name="\$CONTAINER_NAME" \\
+                --net="bridge" \\
+                -e TZ="Australia/Sydney" \\
+                -e HOST_OS="Unraid" \\
+                -e MONGO_URI="mongodb+srv://${secrets.TRS_MONGO_URI}/taskRoomDB" \\
+                -e MONGO_TEST_URI="mongodb+srv://${secrets.TRS_MONGO_URI}/test" \\
+                -e JWT_SECRET="${secrets.TRS_JWT_SECRET}" \\
+                -e JWT_EXPIRES_IN="7d" \\
+                -e GOOGLE_CLIENT_ID="${secrets.TRS_GOOGLE_CLIENT_ID}.apps.googleusercontent.com" \\
+                -e GOOGLE_CLIENT_SECRET="${secrets.TRS_GOOGLE_CLIENT_SECRET}" \\
+                -p "8083:8000/tcp" \\
+                "\$CONTAINER_NAME"
+        """
         }
       }
         }
