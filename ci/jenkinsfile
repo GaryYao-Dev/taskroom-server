@@ -38,6 +38,7 @@ pipeline {
 
                 // Use Groovy string interpolation to include the secrets in the docker run command
                 sh """
+                set +x
                 docker run -d \\
                     --name="\$CONTAINER_NAME" \\
                     --net="bridge" \\
@@ -51,6 +52,7 @@ pipeline {
                     -e GOOGLE_CLIENT_SECRET="${secrets.google_client_secret}" \\
                     -p "8083:8000/tcp" \\
                     "\$CONTAINER_NAME"
+                set -x
                 """
             }
         }
