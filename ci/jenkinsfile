@@ -30,26 +30,28 @@ pipeline {
         }
 
         stage('Run Docker Container') {
-      steps {
-        withCredentials([string(credentialsId: 'trs_secret', variable: 'TRS_SECRET')]) {
-          def secrets = readJSON text: TRS_SECRET
-          sh """
-            docker run -d \\
-                --name="\$CONTAINER_NAME" \\
-                --net="bridge" \\
-                -e TZ="Australia/Sydney" \\
-                -e HOST_OS="Unraid" \\
-                -e MONGO_URI="mongodb+srv://${secrets.TRS_MONGO_URI}/taskRoomDB" \\
-                -e MONGO_TEST_URI="mongodb+srv://${secrets.TRS_MONGO_URI}/test" \\
-                -e JWT_SECRET="${secrets.TRS_JWT_SECRET}" \\
-                -e JWT_EXPIRES_IN="7d" \\
-                -e GOOGLE_CLIENT_ID="${secrets.TRS_GOOGLE_CLIENT_ID}.apps.googleusercontent.com" \\
-                -e GOOGLE_CLIENT_SECRET="${secrets.TRS_GOOGLE_CLIENT_SECRET}" \\
-                -p "8083:8000/tcp" \\
-                "\$CONTAINER_NAME"
-        """
-        }
-      }
+          steps {
+            withCredentials([string(credentialsId: 'trs_secret', variable: 'TRS_SECRET')]) {
+              // Parse the JSON string outside of the sh step
+              def secrets = readJSON text: env.TRS_SECRET
+              // Use Groovy string interpolation to include the secrets in the docker run command
+              sh """
+                    docker run -d \\
+                        --name="\$CONTAINER_NAME" \\
+                        --net="bridge" \\
+                        -e TZ="Australia/Sydney" \\
+                        -e HOST_OS="Unraid" \\
+                        -e MONGO_URI="mongodb+srv://${secrets.TRS_MONGO_URI}/taskRoomDB" \\
+                        -e MONGO_TEST_URI="mongodb+srv://${secrets.TRS_MONGO_URI}/test" \\
+                        -e JWT_SECRET="${secrets.TRS_JWT_SECRET}" \\
+                        -e JWT_EXPIRES_IN="7d" \\
+                        -e GOOGLE_CLIENT_ID="${secrets.TRS_GOOGLE_CLIENT_ID}.apps.googleusercontent.com" \\
+                        -e GOOGLE_CLIENT_SECRET="${secrets.TRS_GOOGLE_CLIENT_SECRET}" \\
+                        -p "8083:8000/tcp" \\
+                        "\$CONTAINER_NAME"
+                    """
+            }
+          }
         }
     }
 }
