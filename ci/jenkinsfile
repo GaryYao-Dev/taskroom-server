@@ -35,6 +35,7 @@ pipeline {
             script {
                 // Parse the JSON string after TRS_SECRET is set
                 def secrets = readJSON text: env.TRS_SECRET
+
                 // Use Groovy string interpolation to include the secrets in the docker run command
                 sh """
                 docker run -d \\
@@ -42,12 +43,12 @@ pipeline {
                     --net="bridge" \\
                     -e TZ="Australia/Sydney" \\
                     -e HOST_OS="Unraid" \\
-                    -e MONGO_URI="mongodb+srv://${secrets.TRS_MONGO_URI}/taskRoomDB" \\
-                    -e MONGO_TEST_URI="mongodb+srv://${secrets.TRS_MONGO_URI}/test" \\
-                    -e JWT_SECRET="${secrets.TRS_JWT_SECRET}" \\
+                    -e MONGO_URI="mongodb+srv://${secrets.mongo_uri}/taskRoomDB" \\
+                    -e MONGO_TEST_URI="mongodb+srv://${secrets.mongo_uri}/test" \\
+                    -e JWT_SECRET="${secrets.jwt_secret}" \\
                     -e JWT_EXPIRES_IN="7d" \\
-                    -e GOOGLE_CLIENT_ID="${secrets.TRS_GOOGLE_CLIENT_ID}.apps.googleusercontent.com" \\
-                    -e GOOGLE_CLIENT_SECRET="${secrets.TRS_GOOGLE_CLIENT_SECRET}" \\
+                    -e GOOGLE_CLIENT_ID="${secrets.google_client_id}.apps.googleusercontent.com" \\
+                    -e GOOGLE_CLIENT_SECRET="${secrets.google_client_secret}" \\
                     -p "8083:8000/tcp" \\
                     "\$CONTAINER_NAME"
                 """
