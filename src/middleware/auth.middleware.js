@@ -34,7 +34,7 @@ const authenticateGoogle = passport.authenticate('google', {
   scope: ['profile', 'email'],
 });
 const authenticateGoogleCallback = passport.authenticate('google', {
-  failureRedirect: 'https://taskroom.ygy3389.com/login',
+  failureRedirect: 'https://taskroom.garyyao.au/login',
 });
 
 module.exports = {

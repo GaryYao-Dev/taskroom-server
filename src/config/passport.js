@@ -41,13 +41,13 @@ const localStrategy = new LocalStrategy(
     } catch (err) {
       done(err, false);
     }
-  },
+  }
 );
 
 const googleOptions = {
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'https://api.taskroom.ygy3389.com/api/v1/auth/google/callback',
+  callbackURL: 'https://api.taskroom.garyyao.au/api/v1/auth/google/callback',
 };
 
 const googleStrategy = new GoogleStrategy(
@@ -77,7 +77,7 @@ const googleStrategy = new GoogleStrategy(
     } catch (err) {
       return done(err, false);
     }
-  },
+  }
 );
 
 module.exports = { jwtStrategy, localStrategy, googleStrategy };
