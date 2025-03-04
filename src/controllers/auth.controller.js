@@ -60,7 +60,7 @@ const sendVerificationEmail = async (req, res, next) => {
     const infoRes = await sendMail(
       'Verify your email',
       email,
-      verificationEmail(user.username, token, req.headers.origin),
+      verificationEmail(user.username, token, req.headers.origin)
     );
     if (infoRes?.accepted.includes(email)) {
       res.status(200).json({ message: 'Email sent' });
@@ -77,7 +77,7 @@ const verifyEmail = async (req, res, next) => {
     const user = await User.findByIdAndUpdate(
       id,
       { email_verified: true },
-      { new: true },
+      { new: true }
     );
     if (user.email_verified) {
       res.status(200).json({ message: 'Email verified' });
@@ -100,7 +100,7 @@ const forgotPassword = async (req, res, next) => {
     const infoRes = await sendMail(
       'Reset your password',
       email,
-      resetPasswordEmail(user.username, token, req.headers.origin),
+      resetPasswordEmail(user.username, token, req.headers.origin)
     );
     if (infoRes?.accepted.includes(email)) {
       res.status(200).json({ message: 'Email sent' });
@@ -151,13 +151,13 @@ const generateOTP = async (req, res, next) => {
           attemps: 0,
         },
       },
-      { runValidators: true },
+      { runValidators: true }
     ).exec();
 
     const infoRes = await sendMail(
       'Reset your password',
       email,
-      otpEmail(user.username, otp),
+      otpEmail(user.username, otp)
     );
     if (infoRes?.accepted.includes(email)) {
       res.status(200).json({ message: 'OTP sent successfully' });
@@ -209,7 +209,7 @@ const verifyOTP = async (req, res, next) => {
 const googleLogin = async (req, res, next) => {
   try {
     const token = generateToken(req.user);
-    res.redirect(`https://taskroom.ygy3389.com/login?token=${token}`);
+    res.redirect(`https://taskroom.garyyao.au/login?token=${token}`);
   } catch (error) {
     next(error);
   }
